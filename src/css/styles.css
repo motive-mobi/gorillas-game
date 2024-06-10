@@ -1,0 +1,40 @@
+body {
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+}
+
+#info-wrapper {
+    position: absolute;
+    top: 0;
+}
+
+#info-left {
+    user-select: none;
+}
+
+#info-right {
+    user-select: none;
+}
+
+.font-info {
+    font-family: monospace;
+    color: aliceblue;
+}
+
+#bomb-grab-area {
+    position: absolute;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    background-color: transparent;
+    cursor: grab;
+}
+
+#congratulations {
+    max-width: 25rem;
+    border-radius: 16px;
+    padding: 12px;
+    background-color: cornflowerblue;
+    visibility: hidden;
+}
