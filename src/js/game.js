@@ -63,7 +63,9 @@ function newGame() {
   velocity1DOM.innerText = 0;
   angle2DOM.innerText = 0;
   velocity2DOM.innerText = 0;
-  
+
+  resetGameButtonDOM.style.visibility = "visible";  
+
   draw();
 }
 
@@ -265,7 +267,7 @@ function drawGorillaFace(player) {
     ctx.lineTo(5, 70);
 
     // Mouth
-    if ( state.phase === "aiming" && state.currentPlayer === player ) {
+    if ( state.phase === "aiming" && state.currentPlayer === player || state.phase === "in flight" && state.currentPlayer === player ) {
         // default mouth
         ctx.moveTo(-5, 62);
         ctx.lineTo(5, 62);
@@ -478,6 +480,7 @@ function moveBomb(elapsedTime) {
 function announceWinner() {
   winnerDOM.innerText = `Player ${state.currentPlayer}`;
   congratulationsDOM.style.visibility = "visible";
+  resetGameButtonDOM.style.visibility = "hidden";
   track.pause();
   track.currentTime = 0;
 }
