@@ -1,4 +1,5 @@
 import mainTrack from "../assets/sounds/main_track.mp3";
+import hitTrack from "../assets/sounds/hit.mp3";
 
 // Left info panel
 const angle1DOM = document.querySelector("#info-left .angle");
@@ -17,11 +18,17 @@ const resetGameButtonDOM = document.getElementById("reset-game");
 // The bomb's grab area 
 const bombGrabAreaDOM = document.getElementById("bomb-grab-area");
 
-// Main track
+// Main track and FX
 const track = document.createElement("audio");
-//track.src = "../assets/sounds/main_track.mp3";
 track.src = mainTrack;
+track.volume = 0.08;
 track.loop = true;
+
+const hit = document.createElement("audio");
+hit.src = hitTrack;
+//hit.volume = 0.5;
+hit.loop = false;
+
 
 let isDragging = false;
 let dragStartX = undefined;
@@ -136,6 +143,10 @@ function initializeMainTrack() {
     } else {
         // track already playing
     }
+}
+
+function initializeHitTrack() {
+    hit.play();
 }
 
 function draw() {
@@ -403,6 +414,7 @@ function animate(timestamp) {
 
     // Handle the case when we hit the enemy
     if (hit) {
+      initializeHitTrack();
       state.phase = "celebrating";
       announceWinner();
       draw();
