@@ -19,15 +19,15 @@ const resetGameButtonDOM = document.getElementById("reset-game");
 const bombGrabAreaDOM = document.getElementById("bomb-grab-area");
 
 // Main track and FX
-const track = document.createElement("audio");
-track.src = mainTrack;
-track.volume = 0.08;
-track.loop = true;
+const trackDomElement = document.createElement("audio");
+trackDomElement.src = mainTrack;
+trackDomElement.volume = 0.075;
+trackDomElement.loop = true;
 
-const hit = document.createElement("audio");
-hit.src = hitTrack;
-//hit.volume = 0.5;
-hit.loop = false;
+const hitDomElement = document.createElement("audio");
+hitDomElement.src = hitTrack;
+hitDomElement.volume = 1.0;
+hitDomElement.loop = false;
 
 
 let isDragging = false;
@@ -138,15 +138,15 @@ function initializeBombPosition() {
 }
 
 function initializeMainTrack() {
-    if (track.currentTime === 0) {
-        track.play();
+    if (trackDomElement.currentTime === 0) {
+        trackDomElement.play();
     } else {
         // track already playing
     }
 }
 
 function initializeHitTrack() {
-    hit.play();
+    hitDomElement.play();
 }
 
 function draw() {
@@ -493,8 +493,8 @@ function announceWinner() {
   winnerDOM.innerText = `Player ${state.currentPlayer}`;
   congratulationsDOM.style.visibility = "visible";
   resetGameButtonDOM.style.visibility = "hidden";
-  track.pause();
-  track.currentTime = 0;
+  trackDomElement.pause();
+  trackDomElement.currentTime = 0;
 }
 
 console.log("Game loaded.");
