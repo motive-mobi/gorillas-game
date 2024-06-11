@@ -183,7 +183,7 @@ function drawGorilla(player) {
   drawGorillaBody();
   drawGorillaLeftArm(player);
   drawGorillaRightArm(player);
-  drawGorillaFace();
+  drawGorillaFace(player);
   
   ctx.restore();
 };
@@ -250,7 +250,7 @@ function drawGorillaRightArm(player) {
     ctx.stroke();
 }
 
-function drawGorillaFace() {
+function drawGorillaFace(player) {
     ctx.strokeStyle = "lightgray";
     ctx.lineWidth = 3;
 
@@ -265,8 +265,19 @@ function drawGorillaFace() {
     ctx.lineTo(5, 70);
 
     // Mouth
-    ctx.moveTo(-5, 62);
-    ctx.lineTo(5, 62);
+    if ( state.phase === "aiming" && state.currentPlayer === player ) {
+        // default mouth
+        ctx.moveTo(-5, 62);
+        ctx.lineTo(5, 62);
+    } else if( state.phase === "celebrating" && state.currentPlayer === player ) {
+        // draw a smile mouth
+        ctx.moveTo(-5, 62);
+        ctx.quadraticCurveTo(-7, 58, 7, 62);
+    } else {
+        // draw worried mouth
+        ctx.moveTo(-7, 63);
+        ctx.lineTo(-2, 62);  
+    }
 
     ctx.stroke();
 }
