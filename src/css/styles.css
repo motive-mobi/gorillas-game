@@ -17,6 +17,14 @@ body {
     user-select: none;
 }
 
+.font-large {
+    font-size: xx-large;
+}
+
+.score {
+    font-size: xxx-large;
+}
+
 .font-info {
     font-family: monospace;
     color: aliceblue;
