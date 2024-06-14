@@ -1,13 +1,26 @@
 import mainTrack from "../assets/sounds/main_track.mp3";
 import hitTrack from "../assets/sounds/hit.mp3";
 
+// CSS Animations
+const animationSpinning = [
+  { transform: "rotate(0) scale(1)" },
+  { transform: "rotate(360deg) scale(0)" },
+];
+
+const animationTiming = {
+  duration: 2000,
+  iterations: 1,
+};
+
 // Left info panel
 const angle1DOM = document.querySelector("#info-left .angle");
 const velocity1DOM = document.querySelector("#info-left .velocity");
+const score1DOM = document.querySelector("#info-left .score");
 
 // Right info panel
 const angle2DOM = document.querySelector("#info-right .angle");
 const velocity2DOM = document.querySelector("#info-right .velocity");
+const score2DOM = document.querySelector("#info-right .score");
 
 // Congratulations panel
 const congratulationsDOM = document.getElementById("congratulations");
@@ -21,7 +34,7 @@ const bombGrabAreaDOM = document.getElementById("bomb-grab-area");
 // Main track and FX
 const trackDomElement = document.createElement("audio");
 trackDomElement.src = mainTrack;
-trackDomElement.volume = 0.075;
+trackDomElement.volume = 0.6;
 trackDomElement.loop = true;
 
 const hitDomElement = document.createElement("audio");
@@ -34,8 +47,13 @@ let isDragging = false;
 let dragStartX = undefined;
 let dragStartY = undefined;
 
-// O state do jogo
+// Game state and score
 let state = {};
+let score = {
+    player1: 0,
+    player2: 0,
+    max: 5
+};
 
 // Referencias dos elementos HTML
 const canvas = document.getElementById("game");
@@ -44,20 +62,34 @@ canvas.width = window.innerWidth;
 canvas.height = window.innerHeight;
 const ctx = canvas.getContext("2d");
 
+// Randomize initial player
+function getRandomInt(min, max) {
+  min = Math.ceil(min); // Round up the minimum value
+  max = Math.floor(max); // Round down the maximum value
+  return Math.floor(Math.random() * (max - min + 1)) + min;
+}
+
+let initialPlayer = getRandomInt(1, 2);
+
 newGame();
 
 function newGame() {
-  // Initialize game state
+
+  
+  // Set game state
   state = {
     scale: 1,
-    phase: "aiming", // aiming | in flight | celebrating
-    currentPlayer: 1,
+    phase: "aiming", // aiming | inFlight | celebrating
+    //currentPlayer: 1,
+    currentPlayer: initialPlayer ? initialPlayer : state.currentPlayer,
     bomb: {
       x: undefined,
       y: undefined,
       velocity: { x: 0, y: 0 },
     },
     buildings: generateBuildings(),
+    score1: score.player1,
+    score2: score.player2,
   };
 
   calculateScale();
@@ -68,12 +100,24 @@ function newGame() {
   congratulationsDOM.style.visibility = "hidden";
   angle1DOM.innerText = 0;
   velocity1DOM.innerText = 0;
+  score1DOM.innerText = state.score1;
   angle2DOM.innerText = 0;
   velocity2DOM.innerText = 0;
+  score2DOM.innerText = state.score2;
 
   resetGameButtonDOM.style.visibility = "visible";  
 
   draw();
+
+  initialPlayer = undefined;
+}
+
+function resetScore() {
+    // Initialize game state
+    score = {
+        player1: 0,
+        player2: 0
+    }
 }
 
 function generateBuildings() {
@@ -278,7 +322,7 @@ function drawGorillaFace(player) {
     ctx.lineTo(5, 70);
 
     // Mouth
-    if ( state.phase === "aiming" && state.currentPlayer === player || state.phase === "in flight" && state.currentPlayer === player ) {
+    if ( state.phase === "aiming" && state.currentPlayer === player || state.phase === "inFlight" && state.currentPlayer === player ) {
         // default mouth
         ctx.moveTo(-5, 62);
         ctx.lineTo(5, 62);
@@ -382,7 +426,7 @@ function setInfo(deltaX, deltaY) {
 }
 
 function throwBomb() {
-  state.phase = "in flight";
+  state.phase = "inFlight";
   previousAnimationTimestamp = undefined;
   requestAnimationFrame(animate);
 }
@@ -405,20 +449,44 @@ function animate(timestamp) {
 
     // Handle the case when we hit a building or the bomb got off-screen
     if (miss) {
-      state.currentPlayer = state.currentPlayer === 1 ? 2 : 1; // Switch players
-      state.phase = "aiming";
-      initializeBombPosition();
-      draw();
-      return;
+        // Switch players
+        switchPlayers();
+        state.phase = "aiming";
+        initializeBombPosition();
+        draw();
+        return;
     }
 
     // Handle the case when we hit the enemy
     if (hit) {
-      initializeHitTrack();
-      state.phase = "celebrating";
-      announceWinner();
-      draw();
-      return;
+        initializeHitTrack();
+
+        if (state.currentPlayer === 1) {
+        score.player1++;
+        score1DOM.innerText = score.player1;
+        score1DOM.animate(animationSpinning, animationTiming);
+        } else {
+        score.player2++;
+        score2DOM.innerText = score.player2;
+        score2DOM.animate(animationSpinning, animationTiming);
+        }
+
+        console.log(score.player1, score.player2);
+        console.log(score.max);
+        console.log(initialPlayer);
+
+        if (score.player1 === score.max || score.player2 === score.max) {
+        state.phase = "celebrating";
+        announceWinner();
+        draw();
+        return;
+        } else {
+        // Switch players
+        switchPlayers();
+        newGame();
+        return;
+        }
+
     }
   }
 
@@ -427,6 +495,10 @@ function animate(timestamp) {
   // Continue the animation loop
   previousAnimationTimestamp = timestamp;
   requestAnimationFrame(animate);
+}
+
+function switchPlayers() {
+    return state.currentPlayer = state.currentPlayer === 1 ? 2 : 1;
 }
 
 function checkFrameHit() {
@@ -495,6 +567,7 @@ function announceWinner() {
   resetGameButtonDOM.style.visibility = "hidden";
   trackDomElement.pause();
   trackDomElement.currentTime = 0;
+  resetScore();
 }
 
 console.log("Game loaded.");
