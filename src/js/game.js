@@ -546,9 +546,12 @@ function handleScore() {
 function animateScore(el) {
     anime({
         targets: el,
-        easing: 'easeInOutQuad',
-        scale: [0.9, 1],
+        translateX: [250, 0],
+        rotate: 360,
         duration: 500
+        /*easing: 'easeInOutQuad',
+        scale: [0.9, 1],
+        duration: 500*/
     })
 }
 
