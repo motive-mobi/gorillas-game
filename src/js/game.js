@@ -1,17 +1,6 @@
 import mainTrack from "../assets/sounds/main_track.mp3";
 import hitTrack from "../assets/sounds/hit.mp3";
 
-// CSS Animations
-const animationSpinning = [
-  { transform: "rotate(0) scale(1)" },
-  { transform: "rotate(360deg) scale(0)" },
-];
-
-const animationTiming = {
-  duration: 2000,
-  iterations: 1,
-};
-
 // Left info panel
 const angle1DOM = document.querySelector("#info-left .angle");
 const velocity1DOM = document.querySelector("#info-left .velocity");
@@ -34,7 +23,7 @@ const bombGrabAreaDOM = document.getElementById("bomb-grab-area");
 // Main track and FX
 const trackDomElement = document.createElement("audio");
 trackDomElement.src = mainTrack;
-trackDomElement.volume = 0.6;
+trackDomElement.volume = 0.12;
 trackDomElement.loop = true;
 
 const hitDomElement = document.createElement("audio");
@@ -461,21 +450,20 @@ function animate(timestamp) {
     if (hit) {
         initializeHitTrack();
 
-        if (state.currentPlayer === 1) {
+        if (state.currentPlayer == 1) {
         score.player1++;
         score1DOM.innerText = score.player1;
-        score1DOM.animate(animationSpinning, animationTiming);
-        } else {
+        } else if (state.currentPlayer == 2) {
         score.player2++;
         score2DOM.innerText = score.player2;
-        score2DOM.animate(animationSpinning, animationTiming);
         }
 
-        console.log(score.player1, score.player2);
+        if (score.player1 == score.max || score.player2 == score.max) {
+
+        console.log('player1: ', score.player1, 'player2: ', score.player2);
         console.log(score.max);
         console.log(initialPlayer);
 
-        if (score.player1 === score.max || score.player2 === score.max) {
         state.phase = "celebrating";
         announceWinner();
         draw();
