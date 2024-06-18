@@ -1,4 +1,5 @@
 import anime from "animejs/lib/anime.es.js";
+import Swal from "sweetalert2";
 
 import mainTrack from "../assets/sounds/main_track.mp3";
 import hitTrack from "../assets/sounds/hit.mp3";
@@ -401,7 +402,50 @@ window.addEventListener("mouseup", function () {
 });
 
 newGameButtonDOM.addEventListener("click", newGame);
-resetGameButtonDOM.addEventListener("click", newGame);
+//resetGameButtonDOM.addEventListener("click", newGame);
+resetGameButtonDOM.addEventListener("click", resetLevel);
+
+function resetLevel() {
+    if (state.currentPlayer === 1  && score.player1 > 0) {
+        Swal.fire({
+            title: "Are you sure?",
+            text: "You will loose 1 hit!",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#3085d6",
+            cancelButtonColor: "#d33",
+            confirmButtonText: "Yes!",
+            cancelButtonText: "No, forget it!"
+        }).then((result) => {
+            if (result.isConfirmed) {
+                score.player1--;
+                newGame();
+            }
+        });
+    } else if (state.currentPlayer === 2 && score.player2 > 0) {
+        Swal.fire({
+            title: "Are you sure?",
+            text: "You will loose 1 hit!",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#3085d6",
+            cancelButtonColor: "#d33",
+            confirmButtonText: "Yes!",
+            cancelButtonText: "No, forget it!"
+        }).then((result) => {
+        if (result.isConfirmed) {
+            score.player2--;
+            newGame();
+        }
+        });
+    } else {
+        Swal.fire({
+            icon: "error",
+            title: "Oops... Can't reset level!",
+            text: "You have no hits to do this! (reset costs 1 hit)..."
+        });
+    }
+}
 
 function setInfo(deltaX, deltaY) {
   const hypotenuse = Math.sqrt(deltaX ** 2 + deltaY ** 2);
@@ -479,9 +523,6 @@ function animate(timestamp) {
 function handleScore() {
     initializeHitTrack();
 
-    /*console.log("handleScore currentPlayer:", state.currentPlayer);
-    console.log("handleScore maxHits:", maxHits);*/
-
     if (state.currentPlayer === 1) {
         score.player1++;
         score1DOM.innerText = score.player1;
@@ -494,14 +535,10 @@ function handleScore() {
         animateScore(el);
     }
 
-    /*console.log("handleScore score:", score);*/
-
     if (score.player1 === maxHits || score.player2 === maxHits) {
-        console.log("handleScore winner:", state.currentPlayer);
         gorillaWinner = true;
     }
 
-    /*console.log('gorillaWinner:', gorillaWinner);*/
     return gorillaWinner;
 
 }
