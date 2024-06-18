@@ -1,3 +1,5 @@
+import anime from "animejs/lib/anime.es.js";
+
 import mainTrack from "../assets/sounds/main_track.mp3";
 import hitTrack from "../assets/sounds/hit.mp3";
 
@@ -40,9 +42,11 @@ let dragStartY = undefined;
 let state = {};
 let score = {
     player1: 0,
-    player2: 0,
-    max: 5
+    player2: 0
 };
+const maxHits = 5;
+
+let gorillaWinner = false;
 
 // Referencias dos elementos HTML
 const canvas = document.getElementById("game");
@@ -103,10 +107,9 @@ function newGame() {
 
 function resetScore() {
     // Initialize game state
-    score = {
-        player1: 0,
-        player2: 0
-    }
+    score.player1 = 0;
+    score.player2 = 0;
+    gorillaWinner = false;
 }
 
 function generateBuildings() {
@@ -448,31 +451,19 @@ function animate(timestamp) {
 
     // Handle the case when we hit the enemy
     if (hit) {
-        initializeHitTrack();
 
-        if (state.currentPlayer == 1) {
-        score.player1++;
-        score1DOM.innerText = score.player1;
-        } else if (state.currentPlayer == 2) {
-        score.player2++;
-        score2DOM.innerText = score.player2;
-        }
+        handleScore();
 
-        if (score.player1 == score.max || score.player2 == score.max) {
-
-        console.log('player1: ', score.player1, 'player2: ', score.player2);
-        console.log(score.max);
-        console.log(initialPlayer);
-
-        state.phase = "celebrating";
-        announceWinner();
-        draw();
-        return;
+        if (gorillaWinner) {
+            state.phase = "celebrating";
+            announceWinner();
+            draw();
+            return;
         } else {
-        // Switch players
-        switchPlayers();
-        newGame();
-        return;
+            // Switch players
+            switchPlayers();
+            newGame();
+            return;
         }
 
     }
@@ -483,6 +474,45 @@ function animate(timestamp) {
   // Continue the animation loop
   previousAnimationTimestamp = timestamp;
   requestAnimationFrame(animate);
+}
+
+function handleScore() {
+    initializeHitTrack();
+
+    /*console.log("handleScore currentPlayer:", state.currentPlayer);
+    console.log("handleScore maxHits:", maxHits);*/
+
+    if (state.currentPlayer === 1) {
+        score.player1++;
+        score1DOM.innerText = score.player1;
+        let el = document.querySelector("#info-left .font-large");
+        animateScore(el);
+    } else if (state.currentPlayer === 2) {
+        score.player2++;
+        score2DOM.innerText = score.player2;
+        let el = document.querySelector("#info-right .font-large");
+        animateScore(el);
+    }
+
+    /*console.log("handleScore score:", score);*/
+
+    if (score.player1 === maxHits || score.player2 === maxHits) {
+        console.log("handleScore winner:", state.currentPlayer);
+        gorillaWinner = true;
+    }
+
+    /*console.log('gorillaWinner:', gorillaWinner);*/
+    return gorillaWinner;
+
+}
+
+function animateScore(el) {
+    anime({
+        targets: el,
+        easing: 'easeInOutQuad',
+        scale: [0.9, 1],
+        duration: 500
+    })
 }
 
 function switchPlayers() {
@@ -550,12 +580,12 @@ function moveBomb(elapsedTime) {
 }
 
 function announceWinner() {
-  winnerDOM.innerText = `Player ${state.currentPlayer}`;
-  congratulationsDOM.style.visibility = "visible";
-  resetGameButtonDOM.style.visibility = "hidden";
-  trackDomElement.pause();
-  trackDomElement.currentTime = 0;
-  resetScore();
+    winnerDOM.innerText = `Player ${state.currentPlayer}`;
+    congratulationsDOM.style.visibility = "visible";
+    resetGameButtonDOM.style.visibility = "hidden";
+    trackDomElement.pause();
+    trackDomElement.currentTime = 0;
+    resetScore();
 }
 
 console.log("Game loaded.");
