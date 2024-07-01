@@ -549,9 +549,6 @@ function animateScore(el) {
         translateX: [250, 0],
         rotate: 360,
         duration: 500
-        /*easing: 'easeInOutQuad',
-        scale: [0.9, 1],
-        duration: 500*/
     })
 }
 
